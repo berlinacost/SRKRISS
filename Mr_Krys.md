@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR. KRYS | Biblioteca Editorial & Packs de Libros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        krys: {
+                            black: '#000000',
+                            dark: '#0c0c0e',
+                            cardDark: '#141417',
+                            borderDark: '#222228',
+                            lightBg: '#f8f9fa',
+                            lightCard: '#ffffff',
+                            lightBorder: '#e2e8f0',
+                            crimson: '#8b0000',
+                            red: '#cc1111',
+                            redBright: '#ff2a2a',
+                            amber: '#c59b27',
+                            paper: '#fcfbf7'
+                        }
+                    },
+                    fontFamily: {
+                        condensed: ['Oswald', 'Barlow Condensed', 'Arial Narrow', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons CDN -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        html.dark body { background-color: #060608; color: #e5e7eb; }
+        html.light body { background-color: #f4f4f6; color: #1a1a1a; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
+        h1, h2, h3, .font-condensed-brand, .font-heading { font-family: 'Oswald', 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #cc1111; }
+
+        html.dark .glass-panel { background: rgba(12, 12, 14, 0.94); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        html.light .glass-panel { background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px); border: 1px solid rgba(0, 0, 0, 0.08); }
+
+        html.dark .glass-card { background: #0f0f12; border: 1px solid rgba(255, 255, 255, 0.06); transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        html.light .glass-card { background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        .glass-card:hover { transform: translateY(-4px); }
+        html.dark .glass-card:hover { border-color: rgba(204, 17, 17, 0.5); box-shadow: 0 16px 35px -10px rgba(139, 0, 0, 0.3); }
+        html.light .glass-card:hover { border-color: rgba(204, 17, 17, 0.4); box-shadow: 0 16px 35px -10px rgba(0, 0, 0, 0.12); }
+
+        /* 3D Book Container */
+        .book-wrapper { perspective: 1200px; }
+        .book-cover-3d {
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+            transform-style: preserve-3d;
+            box-shadow: -8px 8px 20px rgba(0,0,0,0.5), inset -2px 0 5px rgba(0,0,0,0.3);
+        }
+        .book-wrapper:hover .book-cover-3d {
+            transform: rotateY(-14deg) rotateX(5deg) scale(1.04);
+            box-shadow: -15px 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(204,11,11,0.3);
+        }
+
+        /* Grouped Books Pack Stack */
+        .pack-stack-wrapper { perspective: 1000px; height: 190px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .pack-book-layer {
+            position: absolute; width: 95px; height: 145px; border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.15); box-shadow: -6px 8px 15px rgba(0,0,0,0.6);
+            transition: all 0.4s ease; transform-style: preserve-3d; background-size: cover; background-position: center;
+        }
+        .pack-book-1 { transform: translateX(-42px) rotateY(18deg) scale(0.88); z-index: 10; }
+        .pack-book-2 { transform: translateX(0px) rotateY(0deg) scale(1); z-index: 20; box-shadow: 0 10px 25px rgba(0,0,0,0.7), 0 0 15px rgba(204,17,17,0.3); }
+        .pack-book-3 { transform: translateX(42px) rotateY(-18deg) scale(0.88); z-index: 10; }
+
+        .group:hover .pack-book-1 { transform: translateX(-52px) rotateY(24deg) scale(0.92); }
+        .group:hover .pack-book-2 { transform: translateX(0px) scale(1.05); }
+        .group:hover .pack-book-3 { transform: translateX(52px) rotateY(-24deg) scale(0.92); }
+
+        @keyframes zoomInBook {
+            0% { opacity: 0; transform: scale(0.7) rotateY(30deg); }
+            100% { opacity: 1; transform: scale(1) rotateY(0deg); }
+        }
+        .animate-zoom-book { animation: zoomInBook 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .zoom-inspect-cover { transition: transform 0.1s ease-out; transform-style: preserve-3d; }
+
+        .dropdown-menu { opacity: 0; visibility: hidden; transform: translateY(8px); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        .dropdown-trigger:hover .dropdown-menu, .dropdown-menu:hover { opacity: 1; visibility: visible; transform: translateY(0); }
+        .offer-price { color: #ff2a2a !important; font-weight: 800; }
+
+        @keyframes marqueeScroll { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { display: flex; width: 200%; animation: marqueeScroll 22s linear infinite; }
+        .animate-marquee:hover { animation-play-state: paused; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-krys-crimson selection:text-white">
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="bg-gradient-to-r from-black via-krys-crimson to-black text-white border-b border-red-900/60 text-xs font-condensed-brand tracking-widest overflow-hidden relative z-50 py-2.5 shadow-md select-none">
+        <div class="animate-marquee whitespace-nowrap flex items-center">
+            <div class="flex items-center gap-8 font-bold uppercase pr-8">
+                <span class="flex items-center gap-2 text-yellow-400"><i class="ph-bold ph-file-pdf text-base"></i> VENTA DE LIBROS EN PDF Y EPUB</span>
+                <span class="text-red-400">•</span>
+                <span class="flex items-center gap-2 text-white"><i class="ph-bold ph-lightning text-base text-amber-400"></i> DESCARGA DIGITAL INMEDIATA</span>
+                <span class="text-red-400">•</span>
+                <span class="flex items-center gap-2 text-red-200"><i class="ph-bold ph-books text-base text-red-400"></i> EDICIONES DE PSICOLOGÍA OSCURA Y ESTRATEGIA</span>
+                <span class="text-red-400">•</span>
+                <span class="flex items-center gap-2 text-white"><i class="ph-bold ph-whatsapp-logo text-base text-green-400"></i> COMPRA DIRECTA VÍA WHATSAPP</span>
+                <span class="text-red-400">•</span>
+            </div>
+            <div class="flex items-center gap-8 font-bold uppercase pr-8">
+                <span class="flex items-center gap-2 text-yellow-400"><i class="ph-bold ph-file-pdf text-base"></i> VENTA DE LIBROS EN PDF Y EPUB</span>
+                <span class="text-red-400">•</span>
+                <span class="flex items-center gap-2 text-white"><i class="ph-bold ph-lightning text-base text-amber-400"></i> DESCARGA DIGITAL INMEDIATA</span>
+                <span class="text-red-400">•</span>
+                <span class="flex items-center gap-2 text-red-200"><i class="ph-bold ph-books text-base text-red-400"></i> EDICIONES DE PSICOLOGÍA OSCURA Y ESTRATEGIA</span>
+                <span class="text-red-400">•</span>
+                <span class="flex items-center gap-2 text-white"><i class="ph-bold ph-whatsapp-logo text-base text-green-400"></i> COMPRA DIRECTA VÍA WHATSAPP</span>
+                <span class="text-red-400">•</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-gray-200 dark:border-krys-borderDark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+
+                <!-- BRANDING / LOGO (DINÁMICO CON SCRIPT) -->
+                <div class="flex-shrink-0 cursor-pointer flex items-center gap-3" onclick="navigateTo('home')">
+                    <div id="siteLogoContainer" class="flex items-center gap-3">
+                        <!-- Generado dinámicamente según SITE_CONFIG.logoUrl -->
+                    </div>
+                </div>
+
+                <!-- DESKTOP NAVIGATION -->
+                <nav class="hidden lg:flex items-center gap-6 text-xs xl:text-sm font-semibold tracking-wider font-condensed-brand">
+                    <button onclick="navigateTo('home')" class="text-gray-700 dark:text-gray-300 hover:text-krys-red dark:hover:text-white transition-colors py-2 uppercase">INICIO</button>
+                    
+                    <!-- DROPDOWN LIBROS -->
+                    <div class="relative dropdown-trigger py-2">
+                        <button onclick="navigateTo('catalog')" class="flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-krys-red dark:hover:text-white transition-colors uppercase">
+                            LIBROS
+                            <i class="ph-bold ph-caret-down text-xs text-krys-red"></i>
+                        </button>
+
+                        <div class="dropdown-menu absolute left-0 mt-2 w-[720px] glass-panel bg-white dark:bg-krys-dark/95 border border-gray-200 dark:border-krys-borderDark rounded-xl shadow-2xl p-6 grid grid-cols-3 gap-6 z-50 text-xs font-sans">
+                            <div class="space-y-3">
+                                <div class="font-condensed-brand text-krys-red font-bold text-sm tracking-widest uppercase flex items-center gap-1.5">
+                                    <i class="ph-bold ph-brain text-base"></i> PSICOLOGÍA
+                                </div>
+                                <div class="space-y-1.5 text-gray-600 dark:text-gray-400">
+                                    <a href="#" onclick="filterBySubcategory('Psicología', 'Ingeniería inversa')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Ingeniería inversa</a>
+                                    <a href="#" onclick="filterBySubcategory('Psicología', 'Seducción')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Seducción</a>
+                                    <a href="#" onclick="filterBySubcategory('Psicología', 'Persuasión')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Persuasión</a>
+                                    <a href="#" onclick="filterBySubcategory('Psicología', 'Manipulación')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Manipulación</a>
+                                </div>
+
+                                <div class="font-condensed-brand text-krys-red font-bold text-sm tracking-widest uppercase flex items-center gap-1.5 pt-2">
+                                    <i class="ph-bold ph-compass text-base"></i> ESTRATEGIA
+                                </div>
+                                <div class="space-y-1.5 text-gray-600 dark:text-gray-400">
+                                    <a href="#" onclick="filterBySubcategory('Estrategia', 'Pensamiento estratégico')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Pensamiento estratégico</a>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="font-condensed-brand text-krys-red font-bold text-sm tracking-widest uppercase flex items-center gap-1.5">
+                                    <i class="ph-bold ph-crown text-base"></i> PODER
+                                </div>
+                                <div class="space-y-1.5 text-gray-600 dark:text-gray-400">
+                                    <a href="#" onclick="filterBySubcategory('Poder', 'Liderazgo')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Liderazgo</a>
+                                    <a href="#" onclick="filterBySubcategory('Poder', 'Autoridad')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Autoridad</a>
+                                </div>
+
+                                <div class="font-condensed-brand text-krys-red font-bold text-sm tracking-widest uppercase flex items-center gap-1.5 pt-2">
+                                    <i class="ph-bold ph-shield-check text-base"></i> DISCIPLINA
+                                </div>
+                                <div class="space-y-1.5 text-gray-600 dark:text-gray-400">
+                                    <a href="#" onclick="filterBySubcategory('Disciplina', 'Autocontrol')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Autocontrol</a>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="font-condensed-brand text-krys-red font-bold text-sm tracking-widest uppercase flex items-center gap-1.5">
+                                    <i class="ph-bold ph-package text-base"></i> PACKS EXCLUSIVOS
+                                </div>
+                                <div class="space-y-1.5 text-gray-600 dark:text-gray-400">
+                                    <a href="#" onclick="navigateTo('packs')" class="block font-bold text-krys-crimson dark:text-krys-redBright hover:underline">Ver Combos & Trilogías</a>
+                                </div>
+
+                                <div class="font-condensed-brand text-krys-red font-bold text-sm tracking-widest uppercase flex items-center gap-1.5 pt-2">
+                                    <i class="ph-bold ph-cards text-base"></i> MENTALISMO
+                                </div>
+                                <div class="space-y-1.5 text-gray-600 dark:text-gray-400">
+                                    <a href="#" onclick="filterBySubcategory('Trucos de Cartas', 'Mentalismo')" class="block hover:text-krys-red dark:hover:text-white transition-colors">Mentalismo & Cartas</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="navigateTo('packs')" class="text-krys-red font-bold hover:text-krys-crimson transition-colors py-2 uppercase flex items-center gap-1.5">
+                        <i class="ph-bold ph-package text-base"></i> PACKS DE LIBROS
+                    </button>
+                    <button onclick="navigateTo('free-books')" class="text-gray-700 dark:text-gray-300 hover:text-krys-red dark:hover:text-white transition-colors py-2 uppercase">GRATIS</button>
+                    <button onclick="navigateTo('offers')" class="text-gray-700 dark:text-gray-300 hover:text-krys-red dark:hover:text-white transition-colors py-2 uppercase flex items-center gap-1">
+                        <i class="ph-fill ph-flame text-krys-red"></i> OFERTAS
+                    </button>
+                    <button onclick="navigateTo('about')" class="text-gray-700 dark:text-gray-300 hover:text-krys-red dark:hover:text-white transition-colors py-2 uppercase">SOBRE KRYS</button>
+                    <button onclick="navigateTo('contact')" class="text-gray-700 dark:text-gray-300 hover:text-krys-red dark:hover:text-white transition-colors py-2 uppercase">CONTACTO</button>
+                </nav>
+
+                <!-- RIGHT ACTION BUTTONS -->
+                <div class="flex items-center gap-3">
+                    <div class="relative hidden sm:block w-40 xl:w-56">
+                        <input type="text" id="searchInput" placeholder="Buscar libro..." 
+                            onkeyup="handleSearchInput(event)"
+                            class="w-full bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark rounded-full py-1.5 pl-9 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-krys-red transition-all font-sans">
+                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                    </div>
+
+                    <button onclick="toggleTheme()" id="themeToggleBtn" title="Cambiar Tema (Claro / Oscuro)" 
+                        class="p-2 rounded-full border border-gray-300 dark:border-krys-borderDark bg-gray-100 dark:bg-krys-cardDark text-gray-800 dark:text-yellow-400 hover:scale-105 transition-all">
+                        <i class="ph-bold ph-sun text-lg dark:hidden"></i>
+                        <i class="ph-bold ph-moon text-lg hidden dark:block"></i>
+                    </button>
+
+                    <button onclick="navigateTo('packs')" 
+                        class="relative px-3.5 py-1.5 rounded-full border border-krys-red/40 bg-krys-crimson/10 hover:bg-krys-crimson text-krys-crimson dark:text-white hover:text-white text-xs font-semibold tracking-wider transition-all duration-300 flex items-center gap-1.5 font-condensed-brand">
+                        <i class="ph-bold ph-package text-base"></i>
+                        <span class="hidden md:inline">VER PACKS</span>
+                    </button>
+
+                    <button onclick="openConfigModal()" title="Configuración de Datos" class="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                        <i class="ph-bold ph-gear text-lg"></i>
+                    </button>
+
+                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none">
+                        <i class="ph-bold ph-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOBILE MENU -->
+        <div id="mobileMenu" class="hidden lg:hidden glass-panel border-b border-gray-200 dark:border-krys-borderDark px-4 pt-2 pb-6 space-y-3 font-condensed-brand">
+            <div class="relative mb-3 font-sans">
+                <input type="text" id="mobileSearchInput" placeholder="Buscar en el catálogo..." 
+                    onkeyup="handleMobileSearchInput(event)"
+                    class="w-full bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark rounded-lg py-2 pl-9 pr-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-krys-red">
+                <i class="ph-bold ph-magnifying-glass absolute left-3 top-3 text-gray-400 text-sm"></i>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs font-bold uppercase">
+                <button onclick="navigateTo('home'); toggleMobileMenu()" class="text-left py-2.5 px-3 bg-gray-100 dark:bg-krys-cardDark rounded border border-gray-300 dark:border-krys-borderDark flex items-center gap-2">
+                    <i class="ph-bold ph-house"></i> INICIO
+                </button>
+                <button onclick="navigateTo('packs'); toggleMobileMenu()" class="text-left py-2.5 px-3 bg-red-900/10 text-krys-red rounded border border-krys-red/40 font-bold flex items-center gap-2">
+                    <i class="ph-bold ph-package"></i> PACKS DE LIBROS
+                </button>
+                <button onclick="navigateTo('catalog'); toggleMobileMenu()" class="text-left py-2.5 px-3 bg-gray-100 dark:bg-krys-cardDark rounded border border-gray-300 dark:border-krys-borderDark flex items-center gap-2">
+                    <i class="ph-bold ph-books"></i> CATÁLOGO
+                </button>
+                <button onclick="navigateTo('free-books'); toggleMobileMenu()" class="text-left py-2.5 px-3 bg-gray-100 dark:bg-krys-cardDark rounded border border-gray-300 dark:border-krys-borderDark text-green-500 flex items-center gap-2">
+                    <i class="ph-bold ph-gift"></i> GRATIS
+                </button>
+                <button onclick="navigateTo('offers'); toggleMobileMenu()" class="text-left py-2.5 px-3 bg-gray-100 dark:bg-krys-cardDark rounded border border-gray-300 dark:border-krys-borderDark text-red-500 flex items-center gap-2">
+                    <i class="ph-fill ph-flame"></i> OFERTAS
+                </button>
+                <button onclick="navigateTo('contact'); toggleMobileMenu()" class="text-left py-2.5 px-3 bg-gray-100 dark:bg-krys-cardDark rounded border border-gray-300 dark:border-krys-borderDark flex items-center gap-2">
+                    <i class="ph-bold ph-envelope"></i> CONTACTO
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN ROUTER CONTAINER -->
+    <main id="mainContainer" class="relative z-10 flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- HOME VIEW -->
+        <section id="view-home" class="space-y-16">
+            <div class="relative rounded-2xl glass-panel p-8 sm:p-12 lg:p-16 border border-gray-200 dark:border-krys-borderDark overflow-hidden">
+                <div class="max-w-3xl space-y-6 relative z-10">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-100 dark:bg-krys-crimson/20 border border-krys-red/40 text-krys-red text-xs font-semibold tracking-widest uppercase font-condensed-brand">
+                        <i class="ph-bold ph-bookmarks"></i> Tratados Digitales & Packs Editorial
+                    </div>
+
+                    <div class="space-y-3">
+                        <h1 id="heroBannerTitle" class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight font-condensed-brand">
+                            "QUIEN CON MONSTRUOS LUCHA CUIDE DE NO CONVERTIRSE EN MONSTRUO."
+                        </h1>
+                        <p class="text-krys-red text-sm sm:text-base font-serif italic border-l-2 border-krys-red pl-3">
+                            "Y si miras largo tiempo a un abismo, el abismo también mira dentro de ti." — F. Nietzsche
+                        </p>
+                    </div>
+
+                    <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed font-light">
+                        Explora las obras definitivas sobre conducta humana, pensamiento estratégico, lenguaje no verbal y dominio mental.
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-4 pt-4">
+                        <button onclick="navigateTo('packs')" 
+                            class="px-8 py-4 rounded-xl bg-krys-crimson hover:bg-krys-red text-white text-xs sm:text-sm font-bold tracking-wider uppercase transition-all shadow-lg flex items-center gap-2 font-condensed-brand">
+                            <i class="ph-bold ph-package text-xl"></i>
+                            <span>EXPLORAR PACKS DE LIBROS</span>
+                        </button>
+                        
+                        <button onclick="navigateTo('catalog')" 
+                            class="px-8 py-4 rounded-xl glass-card border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:border-krys-red text-xs sm:text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-2 font-condensed-brand">
+                            <span>VER CATÁLOGO COMPLETO</span>
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PACKS SECTION -->
+            <div class="space-y-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-200 dark:border-krys-borderDark pb-4 gap-2">
+                    <div>
+                        <span class="text-xs font-mono text-krys-red uppercase tracking-widest flex items-center gap-1">
+                            <i class="ph-bold ph-flame"></i> Colecciones Agrupadas
+                        </span>
+                        <h2 class="text-2xl sm:text-4xl font-bold font-condensed-brand text-gray-900 dark:text-white">
+                            PACKS DE LIBROS & TRILOGÍAS
+                        </h2>
+                    </div>
+                    <button onclick="navigateTo('packs')" class="text-xs text-krys-red font-bold hover:underline font-condensed-brand flex items-center gap-1">
+                        VER TODOS LOS PACKS <i class="ph-bold ph-arrow-right"></i>
+                    </button>
+                </div>
+                <div id="homePacksGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- CATEGORIES SECTION -->
+            <div class="space-y-8">
+                <div class="border-b border-gray-200 dark:border-krys-borderDark pb-4">
+                    <span class="text-xs font-mono text-krys-red uppercase tracking-widest">Estructura del Saber</span>
+                    <h2 class="text-2xl sm:text-4xl font-bold font-condensed-brand text-gray-900 dark:text-white">ÁREAS DE ESTUDIO</h2>
+                </div>
+                <div id="categoryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+
+            <!-- FEATURED BOOKS SECTION -->
+            <div class="space-y-8">
+                <div class="flex items-center justify-between border-b border-gray-200 dark:border-krys-borderDark pb-4">
+                    <div>
+                        <span class="text-xs font-mono text-krys-red uppercase tracking-widest">Obras Individuales</span>
+                        <h2 class="text-2xl sm:text-4xl font-bold font-condensed-brand text-gray-900 dark:text-white">LIBROS DESTACADOS</h2>
+                    </div>
+                    <button onclick="navigateTo('catalog')" class="text-xs text-krys-red hover:underline font-condensed-brand font-bold">VER TODO <i class="ph-bold ph-arrow-right"></i></button>
+                </div>
+                <div id="featuredBooksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- PACKS VIEW -->
+        <section id="view-packs" class="hidden space-y-8">
+            <div class="glass-panel rounded-2xl p-8 border border-krys-red/40 space-y-4">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-100 dark:bg-krys-crimson/30 text-krys-red text-xs font-mono font-bold uppercase">
+                    <i class="ph-bold ph-package text-base"></i> COMBOS & TRILOGÍAS EXCLUSIVAS
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-condensed-brand font-bold text-gray-900 dark:text-white">PACKS DE LIBROS & BUNDLES</h1>
+                <p class="text-gray-600 dark:text-gray-300 text-sm max-w-2xl leading-relaxed">
+                    Adquiere tomos agrupados por temática estratégica con precios reducidos y entrega digital inmediata en PDF / EPUB.
+                </p>
+            </div>
+            <div id="mainPacksGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+        </section>
+
+        <!-- CATALOG VIEW -->
+        <section id="view-catalog" class="hidden space-y-8">
+            <div id="catalogHeader" class="glass-panel rounded-xl p-6 sm:p-8 border border-gray-200 dark:border-krys-borderDark space-y-3"></div>
+            <div id="catalogBooksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- FREE BOOKS VIEW -->
+        <section id="view-free-books" class="hidden space-y-8">
+            <div class="glass-panel rounded-2xl p-8 border border-green-500/40 space-y-4">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-400 text-xs font-mono font-bold uppercase">
+                    <i class="ph-bold ph-gift text-base"></i> Recurso Gratuito
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-condensed-brand font-bold text-gray-900 dark:text-white">RECURSOS & GUÍAS GRATIS</h1>
+            </div>
+            <div id="freeBooksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- OFFERS VIEW -->
+        <section id="view-offers" class="hidden space-y-8">
+            <div class="glass-panel rounded-2xl p-8 border border-krys-red/50 space-y-4">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 text-xs font-mono font-bold uppercase">
+                    <i class="ph-fill ph-flame text-base"></i> Descuentos Especiales
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-condensed-brand font-bold text-gray-900 dark:text-white">OFERTAS DE LA SEMANA</h1>
+            </div>
+            <div id="offersBooksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- ABOUT VIEW -->
+        <section id="view-about" class="hidden space-y-8 max-w-4xl mx-auto">
+            <div class="text-center space-y-3">
+                <span class="text-xs font-mono text-krys-red uppercase tracking-widest">Filosofía Editorial</span>
+                <h1 class="text-3xl sm:text-5xl font-condensed-brand font-bold text-gray-900 dark:text-white">SOBRE NUESTRA EDITORIAL</h1>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-8 sm:p-12 border border-gray-200 dark:border-krys-borderDark space-y-6 text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
+                <p class="text-lg text-gray-900 dark:text-white font-serif italic border-l-4 border-krys-red pl-4">
+                    "Un espacio dedicado a la comprensión de la conducta humana, patrones de comportamiento y estrategia aplicada."
+                </p>
+                <p>
+                    Ofrecemos libros digitales condensados y prácticos para lectura rápida y aprendizaje efectivo en negociaciones, liderazgo y disciplina personal.
+                </p>
+            </div>
+        </section>
+
+        <!-- CONTACT VIEW -->
+        <section id="view-contact" class="hidden space-y-8 max-w-4xl mx-auto">
+            <div class="text-center space-y-3">
+                <span class="text-xs font-mono text-krys-red uppercase tracking-widest">Soporte Directo</span>
+                <h1 class="text-3xl sm:text-5xl font-condensed-brand font-bold text-gray-900 dark:text-white">CONTACTO & PEDIDOS</h1>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-panel rounded-2xl p-8 border border-gray-200 dark:border-krys-borderDark space-y-6">
+                    <h2 class="text-xl font-condensed-brand font-bold text-gray-900 dark:text-white border-b pb-3 border-gray-200 dark:border-krys-borderDark">ATENCIÓN DIRECTA</h2>
+                    <div class="space-y-4 text-xs font-sans">
+                        <div class="flex items-center gap-4 p-3 bg-gray-100 dark:bg-krys-cardDark rounded-xl">
+                            <i class="ph-bold ph-whatsapp-logo text-2xl text-green-500"></i>
+                            <div>
+                                <span class="block text-gray-500 font-mono text-[10px]">WHATSAPP OFICIAL</span>
+                                <span id="contactPhoneDisplay" class="text-sm font-bold text-gray-900 dark:text-white"></span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 bg-gray-100 dark:bg-krys-cardDark rounded-xl">
+                            <i class="ph-bold ph-envelope-simple text-2xl text-krys-red"></i>
+                            <div>
+                                <span class="block text-gray-500 font-mono text-[10px]">CORREO DE SOPORTE</span>
+                                <span id="contactEmailDisplay" class="text-sm font-bold text-gray-900 dark:text-white"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-8 border border-gray-200 dark:border-krys-borderDark space-y-4">
+                    <h2 class="text-xl font-condensed-brand font-bold text-gray-900 dark:text-white border-b pb-3 border-gray-200 dark:border-krys-borderDark">ENVIAR CONSULTA</h2>
+                    <form onsubmit="handleContactSubmit(event)" class="space-y-4 text-xs font-sans">
+                        <div>
+                            <label class="block text-gray-500 mb-1 font-mono">Tu Nombre</label>
+                            <input type="text" id="contactFormName" required class="w-full bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark rounded-lg px-3 py-2 text-gray-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 mb-1 font-mono">Mensaje o Libro de Interés</label>
+                            <textarea id="contactFormMsg" rows="3" required class="w-full bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark rounded-lg px-3 py-2 text-gray-900 dark:text-white resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl bg-krys-crimson text-white font-bold uppercase font-condensed-brand tracking-wider">ENVIAR A WHATSAPP</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEARCH RESULTS VIEW -->
+        <section id="view-search" class="hidden space-y-8">
+            <div class="border-b border-gray-200 dark:border-krys-borderDark pb-4">
+                <h1 class="text-2xl sm:text-3xl font-condensed-brand font-bold text-gray-900 dark:text-white">
+                    RESULTADOS PARA: <span id="searchQueryTitle" class="text-krys-red">""</span>
+                </h1>
+            </div>
+            <div id="searchResultsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+    </main>
+
+    <!-- LIGHTBOX MODAL DE LIBRO 3D -->
+    <div id="bookModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+        <div class="relative w-full max-w-4xl glass-panel bg-white dark:bg-krys-dark border border-gray-300 dark:border-krys-borderDark rounded-2xl overflow-hidden shadow-2xl max-h-[95vh] overflow-y-auto animate-zoom-book">
+            <button onclick="closeBookModal()" class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-gray-200 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark text-gray-700 dark:text-white hover:text-krys-red flex items-center justify-center transition-colors">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+            <div id="bookModalContent" class="p-6 sm:p-10 grid grid-cols-1 md:grid-cols-12 gap-8 items-center font-sans"></div>
+        </div>
+    </div>
+
+    <!-- CONFIG MODAL -->
+    <div id="configModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="relative w-full max-w-xl glass-panel bg-white dark:bg-krys-dark border border-gray-300 dark:border-krys-borderDark rounded-2xl p-6 space-y-6 text-xs text-gray-900 dark:text-white font-sans">
+            <div class="flex items-center justify-between border-b pb-3 border-gray-200 dark:border-krys-borderDark">
+                <h2 class="text-lg font-condensed-brand font-bold uppercase">DATOS DE CONTACTO & EDITORIAL</h2>
+                <button onclick="closeConfigModal()" class="text-gray-500 hover:text-black dark:hover:text-white"><i class="ph-bold ph-x text-lg"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-500 mb-1 font-mono">Número de WhatsApp (con código de país sin +):</label>
+                    <input type="text" id="cfgWhatsapp" class="w-full bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark rounded px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-gray-500 mb-1 font-mono">Email de Contacto:</label>
+                    <input type="text" id="cfgEmail" class="w-full bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark rounded px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-gray-500 mb-1 font-mono">Nombre de la Tienda / Marca:</label>
+                    <input type="text" id="cfgBrandName" class="w-full bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark rounded px-3 py-2">
+                </div>
+            </div>
+            <div class="flex justify-end pt-3">
+                <button onclick="saveConfigSettings()" class="px-5 py-2 bg-green-700 hover:bg-green-600 text-white font-bold rounded font-condensed-brand uppercase tracking-wider">GUARDAR CAMBIOS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <div class="fixed bottom-6 right-6 z-40 flex items-center gap-3">
+        <button onclick="openGeneralWhatsApp()" 
+            class="w-14 h-14 rounded-full bg-green-600 hover:bg-green-500 text-white flex items-center justify-center shadow-2xl transition-all hover:scale-110">
+            <i class="ph-bold ph-whatsapp-logo text-3xl"></i>
+        </button>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 glass-panel border-t border-gray-200 dark:border-krys-borderDark mt-20 pt-16 pb-8 text-xs font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                <div class="space-y-4">
+                    <div id="footerLogoContainer"></div>
+                    <p class="text-gray-500 dark:text-gray-400 leading-relaxed font-light">
+                        Biblioteca especializada en tratados de psicología analítica, estrategia aplicada y desarrollo personal.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-condensed-brand font-bold text-sm tracking-widest text-gray-900 dark:text-white uppercase">NAVEGACIÓN</h4>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-400 font-medium">
+                        <li><a href="#" onclick="navigateTo('home')" class="hover:text-krys-red transition-colors flex items-center gap-1.5"><i class="ph-bold ph-caret-right text-krys-red text-xs"></i> Inicio</a></li>
+                        <li><a href="#" onclick="navigateTo('packs')" class="hover:text-krys-red text-krys-red font-bold transition-colors flex items-center gap-1.5"><i class="ph-bold ph-package text-xs"></i> Packs de Libros (Combos)</a></li>
+                        <li><a href="#" onclick="navigateTo('catalog')" class="hover:text-krys-red transition-colors flex items-center gap-1.5"><i class="ph-bold ph-caret-right text-krys-red text-xs"></i> Catálogo Completo</a></li>
+                        <li><a href="#" onclick="navigateTo('free-books')" class="hover:text-krys-red transition-colors flex items-center gap-1.5"><i class="ph-bold ph-gift text-xs"></i> Muestras Gratuitas</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-condensed-brand font-bold text-sm tracking-widest text-gray-900 dark:text-white uppercase">CATEGORÍAS</h4>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-400">
+                        <li><a href="#" onclick="filterByCategory('Psicología')" class="hover:text-krys-red transition-colors flex items-center gap-1.5"><i class="ph-bold ph-brain text-krys-red"></i> Psicología Oscura</a></li>
+                        <li><a href="#" onclick="filterByCategory('Estrategia')" class="hover:text-krys-red transition-colors flex items-center gap-1.5"><i class="ph-bold ph-compass text-krys-red"></i> Estrategia & Decisiones</a></li>
+                        <li><a href="#" onclick="filterByCategory('Poder')" class="hover:text-krys-red transition-colors flex items-center gap-1.5"><i class="ph-bold ph-crown text-krys-red"></i> Poder & Liderazgo</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-condensed-brand font-bold text-sm tracking-widest text-gray-900 dark:text-white uppercase">ATENCIÓN AL CLIENTE</h4>
+                    <p class="text-gray-500 text-xs">Escríbenos directamente para comprar o consultar por tus libros.</p>
+                    <div class="space-y-2 pt-1 font-mono text-xs">
+                        <button onclick="openGeneralWhatsApp()" class="w-full py-2.5 px-3 rounded-lg bg-green-950/40 border border-green-700/50 text-green-400 hover:bg-green-900/40 font-bold flex items-center justify-center gap-2 transition-colors">
+                            <i class="ph-bold ph-whatsapp-logo text-base"></i> WhatsApp Oficial
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-gray-200 dark:border-krys-borderDark flex flex-col sm:flex-row justify-between items-center gap-4 text-gray-500 dark:text-gray-400 font-mono text-[11px]">
+                <p id="copyrightText">© 2026 MR. KRYS EDITORIAL. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE CONFIGURACIÓN Y FUNCIONES -->
+    <script>
+        /* =========================================================================
+           1. CONFIGURACIÓN PRINCIPAL DE TU TIENDA Y LOGO
+           ========================================================================= */
+        const SITE_CONFIG = {
+            brandName: 'MR. KRYS',
+            tagline: 'EDICIONES DE PODER',
+            // Si tienes una imagen para tu logo, pon el enlace aquí. Si lo dejas null, se genera un logo de texto.
+            logoUrl: null, // Ejemplo: 'https://i.imgur.com/mi-logo.png' o 'logo.png'
+            whatsappNumber: '51999999999', // TU NÚMERO DE WHATSAPP CON CÓDIGO DE PAÍS (ejemplo Perú: 51 + número)
+            email: 'contacto@mrkrys.com',
+            currencySymbol: 'S/' // Moneda (ej: S/, $, €, etc.)
+        };
+
+        /* =========================================================================
+           2. CATEGORÍAS DISPONIBLES
+           ========================================================================= */
+        const CATEGORIES_DATA = {
+            'Psicología': { phIcon: 'ph-brain', desc: 'Mecanismos de conducta, manipulación y persuasión.' },
+            'Estrategia': { phIcon: 'ph-compass', desc: 'Pensamiento sistémico y planificación táctica.' },
+            'Poder': { phIcon: 'ph-crown', desc: 'Liderazgo, autoridad y jerarquías sociales.' },
+            'Disciplina': { phIcon: 'ph-shield-check', desc: 'Autocontrol forjado y enfoque inquebrantable.' },
+            'Trucos de Cartas': { phIcon: 'ph-cards', desc: 'Mentalismo y experimentos psicológicos.' }
+        };
+
+        /* =========================================================================
+           3. CATÁLOGO DE PACKS / COMBOS DE LIBROS
+           ========================================================================= */
+        const PACKS_CATALOG = [
+            {
+                id: 'p1',
+                title: 'TRILOGÍA: EL HOMBRE MENTAL & ESTRATEGIA',
+                tagline: 'Colección de 3 Tomos',
+                booksCount: 3,
+                // Imágenes de las portadas del pack (puedes poner tus URLs)
+                covers: [
+                    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400',
+                    'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400',
+                    'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400'
+                ],
+                includedTitles: [
+                    'Tratado de Psicología Oscura & Ingeniería Inversa',
+                    'Lógica Estratégica & Tablero Mental',
+                    'El Arte de la Seducción Táctica & Atracción'
+                ],
+                originalPrice: 79.90,
+                packPrice: 49.90,
+                savings: '38% DTO',
+                badge: 'PACK TRILOGÍA',
+                colors: ['#8b0000', '#1a1a1a', '#c59b27'],
+                description: 'Diseñado para quienes buscan dominar la lectura de patrones y anticiparse a jugadas sociales.'
+            },
+            {
+                id: 'p2',
+                title: 'PACK PODER & LIDERAZGO SILENCIOSO',
+                tagline: 'Colección de 2 Tomos',
+                booksCount: 2,
+                covers: [
+                    'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400',
+                    'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400'
+                ],
+                includedTitles: [
+                    'Liderazgo Silencioso & Jerarquías de Poder',
+                    'Micro-Patrones & Lectura del Entorno'
+                ],
+                originalPrice: 59.90,
+                packPrice: 34.90,
+                savings: '41% DTO',
+                badge: 'PACK DÚO',
+                colors: ['#1c1917', '#8b0000'],
+                description: 'Establece autoridad firme sin necesidad de elevar el tono. Aprende el lenguaje no verbal.'
+            }
+        ];
+
+        /* =========================================================================
+           4. CATÁLOGO DE LIBROS INDIVIDUALES
+           Para subir tus fotos de portada:
+           Ponte la URL de tu imagen en `coverUrl` (ej: 'https://miservidor.com/libro1.jpg' o 'mis-fotos/libro1.jpg').
+           Si `coverUrl` es null, se genera una portada estilizada automática.
+           ========================================================================= */
+        let BOOKS_CATALOG = [
+            {
+                id: 'b1',
+                title: 'Tratado de Psicología Oscura & Ingeniería Inversa',
+                author: 'Mr. Krys',
+                category: 'Psicología',
+                subcategory: 'Ingeniería inversa',
+                pages: 284,
+                price: 35.00,
+                offerPrice: 19.90,
+                isFree: false,
+                isFeatured: true,
+                rating: 4.9,
+                // AQUÍ SUBES LA FOTO DE TU LIBRO:
+                coverUrl: null, // Puedes poner 'https://i.imgur.com/ejemplo.jpg' o 'portada1.jpg'
+                spineColor: '#8b0000',
+                description: 'Un desglose exhaustivo sobre cómo desmantelar los patrones de comportamiento humano y anticiparse a intenciones ocultas.',
+                contents: ['Principios de Infiltración Cognitiva', 'Detección de Sesgos Ocultos', 'Mapeo de Vulnerabilidades Emocionales']
+            },
+            {
+                id: 'b2',
+                title: 'El Arte de la Seducción Táctica & Atracción',
+                author: 'Mr. Krys',
+                category: 'Psicología',
+                subcategory: 'Seducción',
+                pages: 220,
+                price: 29.00,
+                offerPrice: 16.50,
+                isFree: false,
+                isFeatured: true,
+                rating: 4.8,
+                coverUrl: null,
+                spineColor: '#cc1111',
+                description: 'Análisis profundo sobre el carisma, la escasez simulada y el control de la tensión emocional.',
+                contents: ['La Dinámica del Deseo Oculto', 'Generación de Tensión Involuntaria', 'Lenguaje No Verbal']
+            },
+            {
+                id: 'b3',
+                title: 'Lógica Estratégica & Tablero Mental',
+                author: 'Mr. Krys',
+                category: 'Estrategia',
+                subcategory: 'Pensamiento estratégico',
+                pages: 310,
+                price: 42.00,
+                offerPrice: 24.90,
+                isFree: false,
+                isFeatured: true,
+                rating: 5.0,
+                coverUrl: null,
+                spineColor: '#1a1a1a',
+                description: 'Cómo anticipar tres jugadas por delante en cualquier entorno competitivo con teoría de juegos.',
+                contents: ['Matriz de Escenarios Alternativos', 'Gambito Social', 'Preservación de Recursos']
+            },
+            {
+                id: 'b4',
+                title: 'Liderazgo Silencioso & Jerarquías de Poder',
+                author: 'Mr. Krys',
+                category: 'Poder',
+                subcategory: 'Liderazgo',
+                pages: 195,
+                price: 28.00,
+                offerPrice: null,
+                isFree: false,
+                isFeatured: false,
+                rating: 4.7,
+                coverUrl: null,
+                spineColor: '#333333',
+                description: 'Establece tu autoridad sin necesidad de alzar la voz. Dominio del espacio y micro-expresiones de estatus.',
+                contents: ['La Arquitectura de la Autoridad', 'Control de Micro-Señales', 'Manejo de Grupos']
+            },
+            {
+                id: 'b5',
+                title: 'Guía de Detección de Manipulación (Muestra)',
+                author: 'Mr. Krys',
+                category: 'Psicología',
+                subcategory: 'Manipulación',
+                pages: 45,
+                price: 0,
+                offerPrice: null,
+                isFree: true,
+                isFeatured: true,
+                rating: 4.9,
+                coverUrl: null,
+                spineColor: '#15803d',
+                description: 'Recurso introductorio gratuito con 10 técnicas de chantaje emocional y cómo neutralizarlas de inmediato.',
+                contents: ['Gaslighting y su Antídoto', 'Checklist de Defensa Mental']
+            }
+        ];
+
+        /* =========================================================================
+           5. LÓGICA INTERNA DE LA TIENDA Y RENDERIZADO
+           ========================================================================= */
+        let currentFilterCategory = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('krysTheme');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+            }
+
+            renderHeaderAndLogo();
+            renderPacksSection();
+            renderCategoryGrid();
+            renderFeaturedBooks();
+            renderFreeBooks();
+            renderOffersBooks();
+            updateContactDisplays();
+        });
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                localStorage.setItem('krysTheme', 'light');
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                localStorage.setItem('krysTheme', 'dark');
+            }
+        }
+
+        function renderHeaderAndLogo() {
+            const logoHTML = SITE_CONFIG.logoUrl ? `
+                <img src="${SITE_CONFIG.logoUrl}" alt="${SITE_CONFIG.brandName}" class="h-10 w-auto object-contain">
+                <div>
+                    <span class="font-condensed-brand text-2xl font-bold tracking-wider text-gray-900 dark:text-white block leading-none">
+                        ${SITE_CONFIG.brandName}
+                    </span>
+                    <span class="block text-[10px] tracking-[0.25em] text-gray-500 dark:text-gray-400 uppercase font-mono mt-1">${SITE_CONFIG.tagline}</span>
+                </div>
+            ` : `
+                <div class="w-10 h-10 rounded-lg bg-krys-crimson flex items-center justify-center text-white shadow-md">
+                    <i class="ph-bold ph-shield text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-condensed-brand text-2xl font-bold tracking-wider text-gray-900 dark:text-white block leading-none">
+                        ${SITE_CONFIG.brandName}
+                    </span>
+                    <span class="block text-[10px] tracking-[0.25em] text-gray-500 dark:text-gray-400 uppercase font-mono mt-1">${SITE_CONFIG.tagline}</span>
+                </div>
+            `;
+
+            document.getElementById('siteLogoContainer').innerHTML = logoHTML;
+            document.getElementById('footerLogoContainer').innerHTML = logoHTML;
+            document.getElementById('copyrightText').innerText = `© 2026 ${SITE_CONFIG.brandName}. Todos los derechos reservados.`;
+        }
+
+        function createBook3DCoverHTML(book, widthClass = "w-36 h-48 sm:w-40 sm:h-56") {
+            if (book.coverUrl) {
+                return `
+                    <div class="book-cover-3d relative ${widthClass} rounded-r-md rounded-l-sm overflow-hidden border-r-2 border-b-2 border-krys-crimson/50 shadow-2xl bg-gray-900" style="background-image: url('${book.coverUrl}'); background-size: cover; background-position: center;">
+                        <div class="absolute top-0 left-0 bottom-0 w-2.5 bg-gradient-to-r from-black/80 via-black/30 to-transparent border-r border-white/20"></div>
+                        <div class="p-2 relative z-10 flex flex-col justify-between h-full">
+                            <div class="flex justify-between items-start">
+                                ${book.isFree ? '<span class="bg-green-600 text-white text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase">GRATIS</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="book-cover-3d relative ${widthClass} rounded-r-md rounded-l-sm bg-gradient-to-br from-gray-950 via-black to-gray-900 border-r-2 border-b-2 border-krys-crimson/50 p-3 flex flex-col justify-between overflow-hidden" style="border-left: 3px solid ${book.spineColor || '#8b0000'};">
+                    <div class="absolute top-0 left-0 bottom-0 w-2.5 bg-gradient-to-r from-gray-950 via-gray-800 to-gray-900 border-r border-white/10"></div>
+                    <div class="pl-2 space-y-1">
+                        ${book.isFree ? '<span class="bg-green-900/80 text-green-300 text-[9px] font-mono px-1.5 py-0.5 rounded uppercase font-bold">GRATIS</span>' : ''}
+                        ${book.offerPrice ? '<span class="bg-krys-crimson text-white text-[9px] font-mono px-1.5 py-0.5 rounded uppercase font-bold">OFERTA</span>' : ''}
+                    </div>
+                    <div class="pl-2 text-center my-auto space-y-2">
+                        <i class="ph-bold ${CATEGORIES_DATA[book.category]?.phIcon || 'ph-book-open'} text-3xl text-krys-red"></i>
+                        <h4 class="font-condensed-brand font-bold text-xs text-white leading-tight uppercase line-clamp-3 tracking-wide">
+                            ${book.title}
+                        </h4>
+                    </div>
+                    <div class="pl-2 flex justify-between items-center text-[9px] font-mono text-gray-400 border-t border-gray-800 pt-1">
+                        <span>${book.author}</span>
+                        <span>ZOOM</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createBookCardHTML(book) {
+            const hasOffer = book.offerPrice !== null && book.offerPrice !== undefined && book.offerPrice > 0;
+
+            return `
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between space-y-4 group">
+                    <div class="book-wrapper cursor-pointer flex justify-center py-2" onclick="openBookModal('${book.id}')" title="Haz clic para Zoom 3D">
+                        ${createBook3DCoverHTML(book)}
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-[10px] font-mono text-gray-500">
+                            <span class="text-krys-red font-semibold uppercase">${book.category}</span>
+                            <span class="flex items-center gap-1"><i class="ph-fill ph-star text-amber-500 text-xs"></i> ${book.rating}</span>
+                        </div>
+                        <h3 onclick="openBookModal('${book.id}')" class="font-condensed-brand font-bold text-base text-gray-900 dark:text-white hover:text-krys-red cursor-pointer transition-colors line-clamp-1">
+                            ${book.title}
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 font-light">
+                            ${book.description}
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-200 dark:border-krys-borderDark flex items-center justify-between gap-2">
+                        <div>
+                            ${book.isFree ? `
+                                <span class="text-xs font-bold text-green-500 font-mono uppercase">GRATIS</span>
+                            ` : hasOffer ? `
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-gray-400 line-through font-mono">${SITE_CONFIG.currencySymbol} ${book.price.toFixed(2)}</span>
+                                    <span class="text-base font-extrabold offer-price font-condensed-brand">${SITE_CONFIG.currencySymbol} ${book.offerPrice.toFixed(2)}</span>
+                                </div>
+                            ` : `
+                                <span class="text-base font-bold text-gray-900 dark:text-white font-condensed-brand">${SITE_CONFIG.currencySymbol} ${book.price.toFixed(2)}</span>
+                            `}
+                        </div>
+
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="openBookModal('${book.id}')" title="Zoom & Detalles" 
+                                class="p-2 rounded-lg bg-gray-100 dark:bg-krys-cardDark border border-gray-300 dark:border-krys-borderDark text-gray-700 dark:text-gray-300 hover:text-krys-red transition-colors">
+                                <i class="ph-bold ph-arrows-out text-sm"></i>
+                            </button>
+                            
+                            <button onclick="buyViaWhatsApp('${book.title}')" title="Adquirir por WhatsApp" 
+                                class="px-3 py-1.5 rounded-lg bg-green-700 hover:bg-green-600 text-white text-xs font-bold flex items-center gap-1 transition-colors font-condensed-brand uppercase tracking-wider">
+                                <i class="ph-bold ph-whatsapp-logo text-sm"></i>
+                                <span>${book.isFree ? 'OBTENER' : 'COMPRAR'}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPacksSection() {
+            const homeGrid = document.getElementById('homePacksGrid');
+            const mainGrid = document.getElementById('mainPacksGrid');
+
+            const htmlContent = PACKS_CATALOG.map(pack => `
+                <div class="glass-card rounded-2xl p-5 flex flex-col justify-between border border-gray-200 dark:border-krys-borderDark relative group overflow-hidden">
+                    <div class="absolute top-4 left-4 z-30">
+                        <span class="bg-red-600 text-white font-condensed-brand text-[11px] font-bold px-2.5 py-0.5 rounded shadow uppercase tracking-wider">
+                            ${pack.badge}
+                        </span>
+                    </div>
+
+                    <div class="pack-stack-wrapper my-2">
+                        <div class="pack-book-layer pack-book-1 p-2 flex flex-col justify-between" style="background-image: url('${pack.covers?.[0] || ''}'); border-left: 3px solid ${pack.colors[0]};">
+                            <span class="font-condensed-brand text-[9px] text-white font-bold bg-black/60 px-1 rounded">TOMO I</span>
+                        </div>
+                        <div class="pack-book-layer pack-book-2 p-2.5 flex flex-col justify-between" style="background-image: url('${pack.covers?.[1] || ''}'); border-left: 3px solid ${pack.colors[1]};">
+                            <span class="font-condensed-brand text-[9px] text-white font-bold bg-black/60 px-1 rounded text-center">PRINCIPAL</span>
+                        </div>
+                        <div class="pack-book-layer pack-book-3 p-2 flex flex-col justify-between" style="background-image: url('${pack.covers?.[2] || ''}'); border-left: 3px solid ${pack.colors[2] || '#333'};">
+                            <span class="font-condensed-brand text-[9px] text-white font-bold bg-black/60 px-1 rounded">TOMO II</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <h3 class="font-condensed-brand font-bold text-lg text-gray-900 dark:text-white leading-tight uppercase">
+                            ${pack.title}
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-mono text-[11px]">${pack.tagline}</p>
+
+                        <div class="bg-gray-100 dark:bg-krys-cardDark p-3 rounded-xl border border-gray-200 dark:border-krys-borderDark space-y-1.5 text-xs">
+                            <span class="font-condensed-brand font-bold text-gray-700 dark:text-gray-300 text-xs block uppercase tracking-wider">LIBROS EN EL PACK:</span>
+                            <ul class="space-y-1 text-gray-600 dark:text-gray-400 font-sans text-xs">
+                                ${pack.includedTitles.map(t => `<li class="flex items-start gap-1.5"><i class="ph-bold ph-check text-krys-red mt-0.5 flex-shrink-0"></i> <span>${t}</span></li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pt-5 border-t border-gray-200 dark:border-krys-borderDark space-y-3 mt-4">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-2xl font-extrabold offer-price font-condensed-brand">${SITE_CONFIG.currencySymbol} ${pack.packPrice.toFixed(2)}</span>
+                            <span class="text-xs text-gray-400 line-through font-mono">${SITE_CONFIG.currencySymbol} ${pack.originalPrice.toFixed(2)}</span>
+                            <span class="text-[10px] bg-red-950/60 text-red-400 border border-red-800/40 px-1.5 py-0.5 rounded font-mono font-bold">${pack.savings}</span>
+                        </div>
+
+                        <button onclick="buyPackViaWhatsApp('${pack.title}')" 
+                            class="w-full py-3 rounded-xl bg-gray-900 hover:bg-black dark:bg-krys-cardDark dark:hover:bg-krys-crimson text-white font-condensed-brand font-bold text-sm tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2 border border-gray-700">
+                            <i class="ph-bold ph-shopping-cart text-base"></i>
+                            <span>COMPRAR PACK COMPLETO</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (homeGrid) homeGrid.innerHTML = htmlContent;
+            if (mainGrid) mainGrid.innerHTML = htmlContent;
+        }
+
+        function renderFeaturedBooks() {
+            const container = document.getElementById('featuredBooksGrid');
+            if (container) container.innerHTML = BOOKS_CATALOG.filter(b => b.isFeatured).map(createBookCardHTML).join('');
+        }
+
+        function renderCategoryGrid() {
+            const grid = document.getElementById('categoryGrid');
+            if (!grid) return;
+            grid.innerHTML = Object.keys(CATEGORIES_DATA).map(catName => {
+                const cat = CATEGORIES_DATA[catName];
+                return `
+                    <div onclick="filterByCategory('${catName}')" 
+                        class="glass-card rounded-2xl p-6 flex flex-col justify-between cursor-pointer group">
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-krys-cardDark flex items-center justify-center text-2xl text-krys-red">
+                                <i class="ph-bold ${cat.phIcon}"></i>
+                            </div>
+                            <h3 class="font-condensed-brand font-bold text-lg text-gray-900 dark:text-white group-hover:text-krys-red transition-colors">
+                                ${catName.toUpperCase()}
+                            </h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 font-light line-clamp-2">${cat.desc}</p>
+                        </div>
+                        <div class="pt-4 flex items-center justify-between text-xs text-krys-red font-bold font-condensed-brand tracking-wider">
+                            <span>VER LIBROS</span>
+                            <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFreeBooks() {
+            const container = document.getElementById('freeBooksGrid');
+            if (container) container.innerHTML = BOOKS_CATALOG.filter(b => b.isFree).map(createBookCardHTML).join('');
+        }
+
+        function renderOffersBooks() {
+            const container = document.getElementById('offersBooksGrid');
+            if (container) container.innerHTML = BOOKS_CATALOG.filter(b => b.offerPrice > 0).map(createBookCardHTML).join('');
+        }
+
+        function navigateTo(viewId) {
+            const views = ['home', 'packs', 'catalog', 'free-books', 'offers', 'about', 'contact', 'search'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(`view-${viewId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            if (viewId === 'catalog' && !currentFilterCategory) {
+                renderCatalogView('TODOS LOS LIBROS', 'Explora todos los tratados de la editorial.', BOOKS_CATALOG);
+            }
+        }
+
+        function filterByCategory(catName) {
+            currentFilterCategory = catName;
+            const filtered = BOOKS_CATALOG.filter(b => b.category === catName);
+            renderCatalogView(catName, CATEGORIES_DATA[catName]?.desc || '', filtered);
+            navigateTo('catalog');
+        }
+
+        function filterBySubcategory(catName, subcatName) {
+            currentFilterCategory = catName;
+            const filtered = BOOKS_CATALOG.filter(b => b.category === catName && b.subcategory === subcatName);
+            renderCatalogView(`${catName} › ${subcatName}`, `Libros de ${subcatName}`, filtered);
+            navigateTo('catalog');
+        }
+
+        function renderCatalogView(title, description, books) {
+            const header = document.getElementById('catalogHeader');
+            const grid = document.getElementById('catalogBooksGrid');
+
+            header.innerHTML = `
+                <span class="text-[10px] font-mono text-krys-red uppercase tracking-widest">CATÁLOGO EDITORIAL</span>
+                <h1 class="text-2xl sm:text-4xl font-condensed-brand font-bold text-gray-900 dark:text-white uppercase">${title}</h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400 font-light max-w-2xl">${description}</p>
+            `;
+
+            grid.innerHTML = books.length ? books.map(createBookCardHTML).join('') : `
+                <div class="col-span-full text-center py-12 text-gray-500 font-mono">No hay libros en esta sección.</div>
+            `;
+        }
+
+        function openBookModal(bookId) {
+            const book = BOOKS_CATALOG.find(b => b.id === bookId);
+            if (!book) return;
+
+            const modal = document.getElementById('bookModal');
+            const content = document.getElementById('bookModalContent');
+            const hasOffer = book.offerPrice !== null && book.offerPrice !== undefined && book.offerPrice > 0;
+
+            content.innerHTML = `
+                <div class="md:col-span-5 flex flex-col items-center justify-center space-y-4">
+                    <div class="book-wrapper cursor-grab" id="inspectBookContainer">
+                        ${createBook3DCoverHTML(book, "w-52 h-72 sm:w-60 sm:h-84")}
+                    </div>
+                    <div class="text-center text-[11px] text-gray-500 font-mono flex items-center gap-1">
+                        <i class="ph-bold ph-hand-swipe-left text-krys-red"></i>
+                        <span>Pasa el cursor sobre el libro para rotarlo en 3D</span>
+                    </div>
+                </div>
+
+                <div class="md:col-span-7 space-y-5">
+                    <div>
+                        <span class="text-xs font-mono text-krys-red uppercase tracking-widest">${book.category} › ${book.subcategory}</span>
+                        <h2 class="text-2xl sm:text-3xl font-condensed-brand font-bold text-gray-900 dark:text-white uppercase leading-tight">${book.title}</h2>
+                        <p class="text-xs text-gray-500 font-mono mt-1 flex items-center gap-2">
+                            <span>Autor: ${book.author}</span>
+                            <span>•</span>
+                            <span class="flex items-center gap-1"><i class="ph-fill ph-star text-amber-500"></i> ${book.rating} / 5.0</span>
+                        </p>
+                    </div>
+
+                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-light">
+                        ${book.description}
+                    </p>
+
+                    <div class="space-y-2 bg-gray-100 dark:bg-krys-cardDark p-4 rounded-xl border border-gray-200 dark:border-krys-borderDark text-xs">
+                        <span class="font-condensed-brand font-bold text-gray-900 dark:text-white uppercase tracking-wider block">TEMAS TRATADOS:</span>
+                        <ul class="space-y-1 text-gray-600 dark:text-gray-400 font-light">
+                            ${(book.contents || []).map(item => `<li class="flex items-center gap-2"><i class="ph-bold ph-check text-krys-red"></i> ${item}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-krys-cardDark/50 rounded-xl border border-gray-200 dark:border-krys-borderDark">
+                        <div>
+                            <span class="block text-[10px] font-mono text-gray-400 uppercase">PRECIO EDICIÓN DIGITAL</span>
+                            ${book.isFree ? `
+                                <span class="text-xl font-bold text-green-500 font-mono">GRATIS</span>
+                            ` : hasOffer ? `
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-xs text-gray-400 line-through font-mono">${SITE_CONFIG.currencySymbol} ${book.price.toFixed(2)}</span>
+                                    <span class="text-2xl font-extrabold offer-price font-condensed-brand">${SITE_CONFIG.currencySymbol} ${book.offerPrice.toFixed(2)}</span>
+                                </div>
+                            ` : `
+                                <span class="text-2xl font-bold text-gray-900 dark:text-white font-condensed-brand">${SITE_CONFIG.currencySymbol} ${book.price.toFixed(2)}</span>
+                            `}
+                        </div>
+
+                        <button onclick="buyViaWhatsApp('${book.title}')" 
+                            class="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-xs font-condensed-brand uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all">
+                            <i class="ph-bold ph-whatsapp-logo text-xl"></i>
+                            <span>PEDIR POR WHATSAPP</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeBookModal() {
+            document.getElementById('bookModal').classList.add('hidden');
+        }
+
+        function buyViaWhatsApp(bookTitle) {
+            const phone = SITE_CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
+            const message = `Hola ${SITE_CONFIG.brandName}, deseo adquirir el libro digital "${bookTitle}". Por favor indicame los pasos de pago.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function buyPackViaWhatsApp(packTitle) {
+            const phone = SITE_CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
+            const message = `Hola ${SITE_CONFIG.brandName}, deseo comprar el PACK "${packTitle}". ¿Cómo puedo realizar el pago?`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function openGeneralWhatsApp() {
+            const phone = SITE_CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
+            const message = `Hola ${SITE_CONFIG.brandName}, quisiera hacer una consulta sobre la tienda.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function handleSearchInput(e) {
+            const query = e.target.value.trim().toLowerCase();
+            if (e.key === 'Enter' || query.length > 2) executeSearch(query);
+        }
+
+        function handleMobileSearchInput(e) {
+            const query = e.target.value.trim().toLowerCase();
+            if (e.key === 'Enter' || query.length > 2) executeSearch(query);
+        }
+
+        function executeSearch(query) {
+            if (!query) return;
+            document.getElementById('searchQueryTitle').innerText = `"${query}"`;
+            const results = BOOKS_CATALOG.filter(b => 
+                b.title.toLowerCase().includes(query) ||
+                b.category.toLowerCase().includes(query) ||
+                b.description.toLowerCase().includes(query)
+            );
+            document.getElementById('searchResultsGrid').innerHTML = results.length ? results.map(createBookCardHTML).join('') : '<p class="text-gray-500 font-mono col-span-full">Sin resultados encontrando ese título.</p>';
+            navigateTo('search');
+        }
+
+        function openConfigModal() {
+            document.getElementById('cfgWhatsapp').value = SITE_CONFIG.whatsappNumber;
+            document.getElementById('cfgEmail').value = SITE_CONFIG.email;
+            document.getElementById('cfgBrandName').value = SITE_CONFIG.brandName;
+            document.getElementById('configModal').classList.remove('hidden');
+        }
+
+        function closeConfigModal() {
+            document.getElementById('configModal').classList.add('hidden');
+        }
+
+        function saveConfigSettings() {
+            SITE_CONFIG.whatsappNumber = document.getElementById('cfgWhatsapp').value;
+            SITE_CONFIG.email = document.getElementById('cfgEmail').value;
+            SITE_CONFIG.brandName = document.getElementById('cfgBrandName').value;
+            updateContactDisplays();
+            renderHeaderAndLogo();
+            closeConfigModal();
+        }
+
+        function updateContactDisplays() {
+            const pEl = document.getElementById('contactPhoneDisplay');
+            const eEl = document.getElementById('contactEmailDisplay');
+            if (pEl) pEl.innerText = `+${SITE_CONFIG.whatsappNumber}`;
+            if (eEl) eEl.innerText = SITE_CONFIG.email;
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactFormName').value;
+            const msg = document.getElementById('contactFormMsg').value;
+            const phone = SITE_CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
+            const fullMsg = `Hola, mi nombre es ${name}. Consulta: ${msg}`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(fullMsg)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
